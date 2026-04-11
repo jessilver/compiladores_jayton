@@ -34,7 +34,12 @@ jobs:
 
     - name: Generate ANTLR parser (includes visitor)
       run: |
-        antlr4 -Dlanguage=Python3 -visitor -o generated Expr.g4
+        # download specific ANTLR jar to avoid wrapper network issues
+        ANTLR_VERSION=4.11.1
+        mkdir -p antlr
+        curl -sSL -o antlr/antlr-${ANTLR_VERSION}-complete.jar \
+          https://repo1.maven.org/maven2/org/antlr/antlr4/${ANTLR_VERSION}/antlr4-${ANTLR_VERSION}-complete.jar
+        java -jar antlr/antlr-${ANTLR_VERSION}-complete.jar -Dlanguage=Python3 -visitor -o generated Expr.g4
 
     - name: List generated files
       run: |
