@@ -54,3 +54,22 @@ Notes
 
 - If `antlr4` wrapper fails to find a jar, use `-v <version>` or set `ANTLR4_TOOLS_ANTLR_VERSION`.
 - Keep generated files in `generated/` (scripts already provided); `.gitignore` ignores that folder.
+
+Ferramentas para aprendizado (ver etapas)
+
+```powershell
+# Ver tokens (lexer)
+python tools\dump_tokens.py -s "1+2*3"
+
+# Ver árvore de parse (toStringTree)
+python tools\show_parse_tree.py -s "1+2*3"
+
+# Ver enter/exit de regras (walker/listener)
+python tools\listener_trace.py -s "1+2*3"
+
+# Avaliar com visitor (gera resultados; requer -visitor no gerador)
+python VisitorInterp.py example.txt
+```
+
+Gere o parser com `-visitor` (os scripts já fazem isso):
+`./generate_parser.ps1` ou `./generate_parser.sh`

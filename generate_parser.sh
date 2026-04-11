@@ -8,5 +8,5 @@ if [ -n "$ANTLR_VERSION" ]; then
   export ANTLR4_TOOLS_ANTLR_VERSION="$ANTLR_VERSION"
 fi
 
-antlr4 -Dlanguage=Python3 -o "$OUTDIR" "$GRAMMAR"
-echo "Generated files are in: $OUTDIR"
+antlr4 -Dlanguage=Python3 -visitor -o "$OUTDIR" "$GRAMMAR"
+echo "Generated files are in: $OUTDIR (includes Visitor)"
