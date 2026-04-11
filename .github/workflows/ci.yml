@@ -1,0 +1,62 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, feat/** ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      PYTHONPATH: ${{ github.workspace }}
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Set up Java 11
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '11'
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Generate ANTLR parser (includes visitor)
+      run: |
+        antlr4 -Dlanguage=Python3 -visitor -o generated Expr.g4
+
+    - name: List generated files
+      run: |
+        ls -la generated || true
+
+    - name: Dump tokens (lexer)
+      run: |
+        python tools/dump_tokens.py -s "1+2*3"
+
+    - name: Show parse tree
+      run: |
+        python tools/show_parse_tree.py -s "1+2*3"
+
+    - name: Listener trace
+      run: |
+        python tools/listener_trace.py -s "1+2*3"
+
+    - name: Run visitor (evaluate)
+      run: |
+        echo "1+2*3" > example.txt
+        python tools/run_visitor.py example.txt
+
+    - name: Smoke test parser script
+      run: |
+        python test_parser.py
