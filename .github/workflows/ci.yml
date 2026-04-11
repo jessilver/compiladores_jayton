@@ -10,7 +10,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      PYTHONPATH: ${{ github.workspace }}
+      # include generated/ so modules like ExprLexer.py can be imported
+      PYTHONPATH: ${{ github.workspace }}:${{ github.workspace }}/generated
 
     steps:
     - name: Checkout
