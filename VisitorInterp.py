@@ -3,25 +3,32 @@
 Requer que o parser seja gerado com a opção `-visitor`.
 """
 import sys
-
-try:
-    from generated.ExprVisitor import ExprVisitor
-    from generated.ExprParser import ExprParser
-except Exception:
-    try:
-        from ExprVisitor import ExprVisitor
-        from ExprParser import ExprParser
-    except Exception:
-        raise SystemExit("Gere o parser com -visitor antes de usar VisitorInterp (veja README)")
+from generated.ExprVisitor import ExprVisitor
+from generated.ExprParser import ExprParser
 
 
 class VisitorInterp(ExprVisitor):
-    # start_ : expr (SEMI expr)* EOF ;
+    def __init__(self):
+        super().__init__()
+        self.env = {}
+
+    # start_ : statement+ EOF ;
     def visitStart_(self, ctx:ExprParser.Start_Context):
         results = []
-        for i in range(len(ctx.expr())):
-            results.append(self.visit(ctx.expr(i)))
+        for i in range(len(ctx.statement())):
+            results.append(self.visit(ctx.statement(i)))
         return results
+
+    def visitStatement(self, ctx:ExprParser.StatementContext):
+        if ctx.assignment():
+            return self.visit(ctx.assignment())
+        return self.visit(ctx.expr())
+
+    def visitAssignment(self, ctx:ExprParser.AssignmentContext):
+        name = ctx.ID().getText()
+        value = self.visit(ctx.expr())
+        self.env[name] = value
+        return value
 
     def visitAdditive(self, ctx:ExprParser.AdditiveContext):
         # children: multiplicative (op multiplicative)*
@@ -71,7 +78,10 @@ class VisitorInterp(ExprVisitor):
         if ctx.INT():
             return int(ctx.INT().getText())
         if ctx.ID():
-            return ctx.ID().getText()
+            name = ctx.ID().getText()
+            if name not in self.env:
+                raise NameError(f"Variavel '{name}' nao definida")
+            return self.env[name]
         # '(' expr ')'
         return self.visit(ctx.expr())
 
@@ -82,7 +92,8 @@ if __name__ == '__main__':
         print("Uso: python VisitorInterp.py <arquivo> (ou pipedir)")
         sys.exit(1)
     stream = FileStream(sys.argv[1])
-    from ExprLexer import ExprLexer
+    from generated.ExprLexer import ExprLexer
+    from generated.ExprParser import ExprParser
     lexer = ExprLexer(stream)
     tokens = CommonTokenStream(lexer)
     parser = ExprParser(tokens)

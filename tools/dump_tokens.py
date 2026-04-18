@@ -1,15 +1,13 @@
 #!/usr/bin/env python3
 import sys, argparse
+from pathlib import Path
 from antlr4 import FileStream, InputStream, Token
 
-try:
-    from generated.ExprLexer import ExprLexer
-except Exception:
-    try:
-        from ExprLexer import ExprLexer
-    except Exception:
-        print("ExprLexer não encontrado. Gere o parser (veja README).")
-        sys.exit(1)
+ROOT_DIR = Path(__file__).resolve().parents[1]
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
+
+from generated.ExprLexer import ExprLexer
 
 def main():
     ap = argparse.ArgumentParser(description="Imprime tokens (lexer).")

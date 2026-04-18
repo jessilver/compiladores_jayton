@@ -1,5 +1,5 @@
 param(
-    [string]$ANTLR_VERSION = "",
+    [string]$ANTLR_VERSION = "4.11.1",
     [string]$GRAMMAR = "Expr.g4",
     [string]$OUTDIR = "generated"
 )

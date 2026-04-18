@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 import sys
+from pathlib import Path
 from antlr4 import FileStream, CommonTokenStream
 
-try:
-    from generated.ExprLexer import ExprLexer
-    from generated.ExprParser import ExprParser
-except Exception:
-    print('Erro: módulos gerados não encontrados. Gere o parser primeiro.')
-    sys.exit(1)
+ROOT_DIR = Path(__file__).resolve().parents[1]
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
+
+from generated.ExprLexer import ExprLexer
+from generated.ExprParser import ExprParser
 
 from VisitorInterp import VisitorInterp
 

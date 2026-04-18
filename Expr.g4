@@ -1,17 +1,23 @@
 grammar Expr;
 
 // Parser (regras):
-start_ : expr (SEMI expr)* EOF ;
+start_ : statement + EOF ;
 
+
+// Testando otimizações abaixo (ordem de regras e operadores)
+statement      : (assignment | expr) SEMI ;
+assignment     : ID ATTRIB expr ;
 expr           : additive ;
-additive       : multiplicative ( (PLUS | MINUS) multiplicative )* ;
-multiplicative : exponential ( (STAR | SLASH) exponential )* ;
+additive       : (primary | multiplicative) ( (PLUS | MINUS) (primary | multiplicative) )* ;
+multiplicative : unary | (exponential ( (STAR | SLASH) exponential )* )  ; // '*' e '/' são left-assoc
 exponential    : unary ( POW exponential )? ; // '**' é right-assoc
 unary          : (PLUS | MINUS) unary | primary ;
 primary        : INT | ID | LPAREN expr RPAREN ;
 
+
 // Símbolos e operadores
 // '**' antes de '*' para evitar conflito com STAR
+ATTRIB : '='  ;  // atribuição
 SEMI   : ';'  ;  // separador
 POW    : '**' ;  // potência
 PLUS   : '+'  ;  // soma
@@ -26,4 +32,4 @@ INT : [0-9]+ ;                      // inteiro
 ID  : [a-zA-Z_] [a-zA-Z_0-9]* ;     // identificador
 WS  : [ \t\r\n]+ -> skip ;          // ignora espaços
 
-// Para regenerar: antlr4 -Dlanguage=Python3 -o generated Expr.g4
+// Para regenerar: antlr4 -Dlanguage=Python3 -visitor -o generated Expr.g4
