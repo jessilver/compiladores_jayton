@@ -1,8 +1,10 @@
 grammar Expr;
 
 // Parser (regras):
-start_ : expr (SEMI expr)* EOF ;
+start_ : statement (SEMI statement)* EOF ;
 
+statement      : assignment | expr ;
+assignment     : ID ATTRIB expr ;
 expr           : additive ;
 additive       : multiplicative ( (PLUS | MINUS) multiplicative )* ;
 multiplicative : exponential ( (STAR | SLASH) exponential )* ;
@@ -10,8 +12,10 @@ exponential    : unary ( POW exponential )? ; // '**' é right-assoc
 unary          : (PLUS | MINUS) unary | primary ;
 primary        : INT | ID | LPAREN expr RPAREN ;
 
+
 // Símbolos e operadores
 // '**' antes de '*' para evitar conflito com STAR
+ATTRIB : '='  ;  // atribuição
 SEMI   : ';'  ;  // separador
 POW    : '**' ;  // potência
 PLUS   : '+'  ;  // soma

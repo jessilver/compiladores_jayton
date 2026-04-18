@@ -131,9 +131,7 @@ python3 test_parser.py
 ## CI
 
 O workflow (`.github/workflows/ci.yml`) já faz:
+
 - instalar dependências
 - baixar o JAR do ANTLR e gerar o parser em `generated/`
 - executar `tools/dump_tokens.py`, `tools/show_parse_tree.py`, `tools/listener_trace.py`, `tools/run_visitor.py` e `test_parser.py`.
-
-Se quiser, posso adicionar um `pytest` formal para automatizar asserções e integrá-lo ao CI.
-

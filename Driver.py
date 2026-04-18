@@ -1,8 +1,7 @@
 import sys
 from antlr4 import *
-from ExprLexer import ExprLexer
-from ExprParser import ExprParser
-from VisitorInterp import VisitorInterp
+from generated.ExprLexer import ExprLexer
+from generated.ExprParser import ExprParser
 
 def main(argv):
     input_stream = FileStream(argv[1])
