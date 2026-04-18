@@ -12,12 +12,17 @@ class VisitorInterp(ExprVisitor):
         super().__init__()
         self.env = {}
 
-    # start_ : statement (SEMI statement)* EOF ;
+    # start_ : statement+ EOF ;
     def visitStart_(self, ctx:ExprParser.Start_Context):
         results = []
         for i in range(len(ctx.statement())):
             results.append(self.visit(ctx.statement(i)))
         return results
+
+    def visitStatement(self, ctx:ExprParser.StatementContext):
+        if ctx.assignment():
+            return self.visit(ctx.assignment())
+        return self.visit(ctx.expr())
 
     def visitAssignment(self, ctx:ExprParser.AssignmentContext):
         name = ctx.ID().getText()

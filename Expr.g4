@@ -1,9 +1,9 @@
 grammar Expr;
 
 // Parser (regras):
-start_ : statement (SEMI statement)* EOF ;
+start_ : statement + EOF ;
 
-statement      : assignment | expr ;
+statement      : (assignment | expr) SEMI ;
 assignment     : ID ATTRIB expr ;
 expr           : additive ;
 additive       : multiplicative ( (PLUS | MINUS) multiplicative )* ;
@@ -30,4 +30,4 @@ INT : [0-9]+ ;                      // inteiro
 ID  : [a-zA-Z_] [a-zA-Z_0-9]* ;     // identificador
 WS  : [ \t\r\n]+ -> skip ;          // ignora espaços
 
-// Para regenerar: antlr4 -Dlanguage=Python3 -o generated Expr.g4
+// Para regenerar: antlr4 -Dlanguage=Python3 -visitor -o generated Expr.g4
