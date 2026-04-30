@@ -1,22 +1,27 @@
 grammar Expr;
 
 // Parser (regras):
-start_ : statement + EOF ;
+start_ : statement+ EOF ;
 
+statement      : declaration SEMI
+               | assignment SEMI
+               | expr SEMI 
+               ;
 
-// Testando otimizações abaixo (ordem de regras e operadores)
-statement      : (assignment | expr) SEMI ;
+// Adicionada a regra de declaração
+declaration : TYPE ID (ATTRIB expr)? ;
 assignment     : ID ATTRIB expr ;
+
+// A cadeia de precedência DEVE ser estrita (uma chama a próxima)
 expr           : additive ;
-additive       : (primary | multiplicative) ( (PLUS | MINUS) (primary | multiplicative) )* ;
-multiplicative : unary | (exponential ( (STAR | SLASH) exponential )* )  ; // '*' e '/' são left-assoc
-exponential    : unary ( POW exponential )? ; // '**' é right-assoc
+additive       : multiplicative ( (PLUS | MINUS) multiplicative )* ;
+multiplicative : exponential ( (STAR | SLASH) exponential )* ;
+exponential    : unary ( POW exponential )? ; 
 unary          : (PLUS | MINUS) unary | primary ;
-primary        : INT | ID | LPAREN expr RPAREN ;
+primary        : FLOAT | INT | ID | LPAREN expr RPAREN ;
 
 
 // Símbolos e operadores
-// '**' antes de '*' para evitar conflito com STAR
 ATTRIB : '='  ;  // atribuição
 SEMI   : ';'  ;  // separador
 POW    : '**' ;  // potência
@@ -27,9 +32,11 @@ SLASH  : '/'  ;  // divisão
 LPAREN : '('  ;  // abre parênteses
 RPAREN : ')'  ;  // fecha parênteses
 
-// Literais e identificadores
-INT : [0-9]+ ;                      // inteiro
-ID  : [a-zA-Z_] [a-zA-Z_0-9]* ;     // identificador
-WS  : [ \t\r\n]+ -> skip ;          // ignora espaços
+// Palavras-chave e Tipos (DEVE vir antes do ID)
+TYPE : 'int' | 'float' ;
 
-// Para regenerar: antlr4 -Dlanguage=Python3 -visitor -o generated Expr.g4
+// Literais e identificadores corrigidos
+FLOAT : [0-9]+ '.' [0-9]* | '.' [0-9]+ ;
+INT   : [0-9]+ ;                    
+ID    : [a-zA-Z_] [a-zA-Z_0-9]* ;   
+WS    : [ \t\r\n]+ -> skip ;
