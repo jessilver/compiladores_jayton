@@ -13,7 +13,7 @@ from generated.ExprLexer import ExprLexer
 from generated.ExprParser import ExprParser
 
 # texto de teste — ajuste conforme sua gramática
-data = "3+4*5;"
+data = "int a; float b; a = a + 1; b = a * 2.5;"
 
 lexer = ExprLexer(InputStream(data))
 tokens = CommonTokenStream(lexer)
